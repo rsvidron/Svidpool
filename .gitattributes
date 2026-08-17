@@ -1,0 +1,11 @@
+# Normalize to LF in the repository so a Windows checkout and the Linux build
+# container agree on file contents (and therefore on hashes).
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary

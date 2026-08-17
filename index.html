@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>SvidPool — Projector Calibration</title>
+  </head>
+  <body>
+    <canvas id="stage"></canvas>
+
+    <aside id="panel">
+      <section class="grp brand">
+        <h1>SvidPool</h1>
+        <span class="sub">calibration</span>
+      </section>
+
+      <section class="grp">
+        <label for="table">Table</label>
+        <select id="table"></select>
+      </section>
+
+      <section class="grp narrow">
+        <label>Mount <span class="note">seeds handles</span></label>
+        <div class="chips" id="mounts">
+          <button data-mount="centered">Centered</button>
+          <button data-mount="end">End</button>
+          <button data-mount="side">Side</button>
+          <button data-mount="corner">Corner</button>
+        </div>
+      </section>
+
+      <section class="grp grow">
+        <label>Test pattern <span class="note">Space / 1–7</span></label>
+        <div class="chips" id="patterns"></div>
+        <p class="hint" id="hint"></p>
+      </section>
+
+      <section class="grp readouts">
+        <label>Active corner <span class="note">Tab</span></label>
+        <div class="readout" id="corner">—</div>
+        <div class="readout small" id="scale">—</div>
+        <div class="readout small" id="coverage">—</div>
+        <div class="readout small warn" id="warn"></div>
+      </section>
+
+      <section class="grp narrow">
+        <label>View <span class="note" id="zoomPct">100%</span></label>
+        <div class="chips">
+          <button id="zoomOut" title="Zoom out (−)">−</button>
+          <button id="zoomIn" title="Zoom in (+)">+</button>
+          <button id="zoomReset" title="Back to 1:1 (0)">1:1</button>
+          <button id="zoomFit" title="Fit frame + handles (Z)">Fit</button>
+          <button id="fullscreen">Fullscreen</button>
+        </div>
+      </section>
+
+      <section class="grp narrow">
+        <label>Calibration</label>
+        <div class="chips">
+          <button id="save">Save</button>
+          <button id="revert">Revert</button>
+          <button id="reset">Reset</button>
+          <button id="rotate">Rotate ↻</button>
+          <button id="export">Export</button>
+          <button id="import">Import</button>
+        </div>
+        <div class="readout small" id="status"></div>
+      </section>
+
+      <section class="grp keys">
+        <label>Keys</label>
+        <div class="keygrid">
+          <div><kbd>drag</kbd> handle</div>
+          <div><kbd>drag bg</kbd> pan</div>
+          <div><kbd>wheel</kbd> zoom</div>
+          <div><kbd>0</kbd> 1:1 &middot; <kbd>Z</kbd> fit</div>
+          <div><kbd>Tab</kbd> next corner</div>
+          <div><kbd>←↑↓→</kbd> nudge 1px</div>
+          <div><kbd>Shift</kbd>+arr 10px</div>
+          <div><kbd>Alt</kbd>+arr 0.25px</div>
+          <div><kbd>F</kbd> full &middot; <kbd>H</kbd> hide</div>
+          <div><kbd>R</kbd> rotate &middot; <kbd>S</kbd> save</div>
+        </div>
+      </section>
+    </aside>
+
+    <input type="file" id="importFile" accept="application/json" hidden />
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

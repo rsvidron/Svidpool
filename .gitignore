@@ -1,0 +1,30 @@
+node_modules/
+dist/
+*.local
+
+# Build / tooling caches
+.vite/
+.cache/
+*.tsbuildinfo
+
+# Editor + OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude Code: share the launch config, keep personal settings local
+.claude/settings.local.json
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
