@@ -24,7 +24,10 @@ const el = {
   importFile: document.getElementById('importFile') as HTMLInputElement,
 };
 
-let data = calib.load() ?? calib.createCalibration('8ft', 'centered');
+/** Projector-space size. Declared before state, which seeds handles from it. */
+const vp = (): calib.Viewport => ({ w: window.innerWidth, h: window.innerHeight });
+
+let data = calib.load() ?? calib.createCalibration('8ft', 'centered', vp());
 let view = V.identityView();
 let activeCorner = 0;
 let patternIdx = 0;
@@ -41,8 +44,6 @@ let Hview: Mat3 | null = null;
 let solveError = '';
 let cursor: Pt | null = null;
 let dpr = 1;
-
-const vp = (): calib.Viewport => ({ w: window.innerWidth, h: window.innerHeight });
 
 // ---------------------------------------------------------------- rendering
 
@@ -155,14 +156,18 @@ function updateReadout(): void {
   if (Hcal) {
     // Scale is reported from the calibration homography, never the composed
     // one: zooming the workspace must not change the physical px/in you get.
+    //
+    // Resolution at a point is the geometric mean of the two axis scales -- the
+    // area-equivalent px/in. Pooling sx and sy separately would fold the axis
+    // anisotropy that perspective always produces into a number that is meant
+    // to answer one question: how much worse is the far end than the near end.
     const samples = [...corners(table), { x: table.lengthIn / 2, y: table.widthIn / 2 }];
-    const vals: number[] = [];
-    for (const s of samples) {
-      const { sx, sy } = localScale(Hcal, s);
-      vals.push(sx, sy);
-    }
-    const min = Math.min(...vals);
-    const max = Math.max(...vals);
+    const res = samples.map((s) => {
+      const { sx, sy } = localScale(Hcal!, s);
+      return Math.sqrt(sx * sy);
+    });
+    const min = Math.min(...res);
+    const max = Math.max(...res);
     const spread = (max / min - 1) * 100;
 
     let cursorTxt = '';
@@ -413,7 +418,7 @@ el.mounts.addEventListener('click', (e) => {
   const target = e.target as HTMLElement;
   const mount = target.dataset.mount as calib.MountPreset | undefined;
   if (!mount) return;
-  data.handles = calib.defaultHandles(mount, tableById(data.tableId));
+  data.handles = calib.defaultHandles(mount, tableById(data.tableId), vp());
   status(`handles seeded for ${mount} mount — now drag them onto the pockets`);
   target.blur();
 });
@@ -441,7 +446,7 @@ on('revert', () => {
 });
 
 on('reset', () => {
-  data = calib.createCalibration(data.tableId, 'centered');
+  data = calib.createCalibration(data.tableId, 'centered', vp());
   status('reset (saved calibration untouched — press Save to overwrite)');
 });
 

@@ -31,18 +31,29 @@ export interface Viewport {
   h: number;
 }
 
-export function defaultHandles(preset: MountPreset, table: TableSpec): Pt[] {
+export function defaultHandles(preset: MountPreset, table: TableSpec, vp: Viewport): Pt[] {
   // Fit the table's aspect ratio inside the viewport with a margin, then bend
   // the quad into the rough shape that mount produces. These are only a
   // starting point for dragging, never a substitute for it.
+  //
+  // The fitting has to happen in PIXELS. Normalized x and y have different
+  // pixel bases, so dividing a normalized width by an aspect ratio only gives
+  // the right answer on a square viewport -- on 16:9 it seeds a quad stretched
+  // to roughly 3.5:1, which then reports a huge px/in spread before you have
+  // touched anything.
   const aspect = table.lengthIn / table.widthIn;
   const margin = 0.08;
-  let w = 1 - margin * 2;
-  let h = w / aspect;
-  if (h > 1 - margin * 2) {
-    h = 1 - margin * 2;
-    w = h * aspect;
+
+  let wPx = vp.w * (1 - margin * 2);
+  let hPx = wPx / aspect;
+  const maxHPx = vp.h * (1 - margin * 2);
+  if (hPx > maxHPx) {
+    hPx = maxHPx;
+    wPx = hPx * aspect;
   }
+
+  const w = wPx / vp.w;
+  const h = hPx / vp.h;
   const x0 = (1 - w) / 2;
   const y0 = (1 - h) / 2;
   const x1 = x0 + w;
@@ -87,8 +98,12 @@ export function defaultHandles(preset: MountPreset, table: TableSpec): Pt[] {
   }
 }
 
-export function createCalibration(tableId = '8ft', preset: MountPreset = 'centered'): CalibrationData {
-  return { tableId, handles: defaultHandles(preset, tableById(tableId)), rotation: 0 };
+export function createCalibration(
+  tableId = '8ft',
+  preset: MountPreset = 'centered',
+  vp: Viewport = { w: 1920, h: 1080 },
+): CalibrationData {
+  return { tableId, handles: defaultHandles(preset, tableById(tableId), vp), rotation: 0 };
 }
 
 export function load(): CalibrationData | null {
